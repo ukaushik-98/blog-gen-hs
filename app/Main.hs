@@ -3,7 +3,16 @@ module Main where
 import EDSL
 
 main :: IO ()
-main = putStrLn myhtml
+main = putStrLn (render myhtml)
 
-myhtml :: String
-myhtml = makeHtml "My Page Title" "My Page Content"
+myhtml :: Html
+myhtml =
+    html_
+        "My title"
+        ( append_
+            (h1_ "Heading")
+            ( append_
+                (p_ "Paragraph #1")
+                (p_ "Paragraph #2")
+            )
+        )

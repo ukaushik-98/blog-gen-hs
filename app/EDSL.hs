@@ -1,34 +1,44 @@
 module EDSL where
 
-newtype Html = Html String
+newtype Html
+    = Html String
 
-newtype Structure = Structure String
+newtype Structure
+    = Structure String
 
-makeHtml :: String -> String -> String
-makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+type Title =
+    String
 
-getStructureString :: Structure -> String
-getStructureString struct = 
-    case struct of
-        Structure str -> str
+html_ :: Title -> Structure -> Html
+html_ title content =
+    Html
+        ( el
+            "html"
+            ( el "head" (el "title" title)
+                <> el "body" (getStructureString content)
+            )
+        )
+
+p_ :: String -> Structure
+p_ = Structure . el "p"
+
+h1_ :: String -> Structure
+h1_ = Structure . el "h1"
 
 el :: String -> String -> String
-el tag content = "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
+el tag content =
+    "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
 
-html_ :: String -> String
-html_ = el "html"
+append_ :: Structure -> Structure -> Structure
+append_ c1 c2 =
+    Structure (getStructureString c1 <> getStructureString c2)
 
-head_ :: String -> String
-head_ = el "head"
+getStructureString :: Structure -> String
+getStructureString content =
+    case content of
+        Structure str -> str
 
-title_ :: String -> String
-title_ = el "title"
-
-body_ :: String -> String
-body_ = el "body"
-
-p_ :: String -> String
-p_ = el "p"
-
-h1_ :: String -> String
-h1_ = el "h1"
+render :: Html -> String
+render html =
+    case html of
+        Html str -> str
