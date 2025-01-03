@@ -1,4 +1,13 @@
-module EDSL where
+module EDSL(
+    Html,
+    Title,
+    Structure,
+    html_,
+    p_,
+    h1_,
+    append_,
+    render
+) where
 
 newtype Html
     = Html String
@@ -14,7 +23,7 @@ html_ title content =
     Html
         ( el
             "html"
-            ( el "head" (el "title" title)
+            ( el "head" (el "title" (escape title))
                 <> el "body" (getStructureString content)
             )
         )
@@ -42,3 +51,18 @@ render :: Html -> String
 render html =
     case html of
         Html str -> str
+
+
+escape :: String -> String
+escape =
+    let 
+        escapeChar c =
+            case c of
+                '<' -> "&lt;"
+                '>' -> "&gt;"
+                '&' -> "&amp;"
+                '"' -> "&quot;"
+                '\'' -> "&#39;"
+                _ -> [c]
+    in
+        concatMap escapeChar
